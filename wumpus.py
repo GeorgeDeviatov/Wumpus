@@ -14,6 +14,8 @@ class AI:
         self.path = []
         self.wamcan = []
         self.wamnot = []
+        self.need = True
+        self.coor = None
     
     
     def base_analyze(self):
@@ -29,33 +31,35 @@ class AI:
     
     def analyze(self,a):
         ancan = a
+        print(self.agent.env.agents[1].pos,self.coor,self.agent.env.map[self.agent.pos][1],self.wamcan,ancan,ancan==None)
         if ancan == None:
             self.base_analyze()
         else:
-            for can in self.wamcan:
-                if can in self.wamnot and can in ancan:
-                    self.wamcan.remove(can)
-                    self.wamnot.remove(can)      
-                    ancan.remove(can)
-                elif can in self.wamnot:
-                    self.wamnot.remove(can)
-                    self.wamcan.remove(can)
-                elif can in ancan:
-                    self.wamcan.remove(can)
-                    ancan.remove(can)
-            
-            if len(self.wamnot)>0:
-                for an in self.wamcan:
-                    if an not in ancan:
-                        self.wamcan.remove(an)
-            for b in ancan:
-                self.wamcan.append(b)
+            for cant in self.wamnot:
+                if cant in self.wamcan and cant in ancan:
+                    self.wamcan.remove(cant)
+                    ancan.remove(cant)
+                elif cant in self.wamcan:
+                    self.wamcan.remove(cant)
+                elif cant in ancan:
+                    ancan.remove(cant)
+            print("Ya her nenuznaia",self.wamcan,ancan)
+            if len(self.wamcan)>0:
+                ti_wamcan = []
+                if len(self.wamcan)>0:
+                    for an in range(len(self.wamcan)):
+                        print(self.wamcan[an],ancan,self.wamcan[an] in ancan)
+                        if self.wamcan[an] in ancan:
+                            ti_wamcan.append(self.wamcan[an])
+                    print(ti_wamcan)
+                    self.wamcan = ti_wamcan.copy()
+            else:
+                for b in ancan:
+                    self.wamcan.append(b)
             
             if len(self.wamcan)==1:
                 self.coor = self.wamcan[0]
-    
-    
-    
+        print(self.agent.env.agents[1].pos,self.agent.env.map[self.agent.pos][1],self.wamcan,ancan,self.coor)
     def ret(self):
         self.agent.pos = self.path[len(self.path)-1]
         self.path.pop(len(self.path)-1)       
@@ -76,7 +80,6 @@ class AI:
             if self.agent.env.agents[ag].pos in self.agent.env.map[self.agent.pos][1]:
                 print(self.agent.env.agents[ag].mes)
                 iss = True
-        print(ok,self.agent.env.agents[1].pos,self.agent.env.map[self.agent.pos][1])
         if ok:
             for place in self.agent.env.map[self.agent.pos][1]:
                 if place not in self.wamnot:
@@ -92,12 +95,12 @@ class AI:
                 if self.coor in self.agent.env.map[self.agent.pos][1]:
                     print("Shoot at room {}".format(self.coor))
                     if self.coor == self.agent.env.agents[1].pos:
-                        print("You won")
+                        print("You won")                                                       
                         return False,True
                     else:
                         print("...")
                         return True,False
-            self.analyze(self.agent.env.map[self.agent.pos][1])
+            self.analyze(self.agent.env.map[self.agent.pos][1].copy())
             self.ret()
         return False,False
 
@@ -132,7 +135,7 @@ class Player:
             print("You write bad things")
     
     
-    
+#19,4    
     def step(self):
         print("You are in room {}".format(self.agent.pos))
         print("You can move or shoot at rooms {}".format(self.agent.env.map[self.agent.pos][1]))
@@ -192,7 +195,7 @@ class Environment:
             print("A bat transported you to another room!")
             self.agents[0].pos = random.randint(0,19)
         if self.agents[0].pos == self.agents[1].pos:
-            print("You are eaten by wampus!Wumpus is happy :)!")
+            print("You are eaten by wumpus!Wumpus is happy :)!")
             sys.exit()
         if shot:
             self.agents[1].step()
@@ -227,7 +230,7 @@ class Environment:
 if __name__ == '__main__':
     print("HUNT THE WUMPUS")
     
-    mode = input("Write p to play, write a to watch ai ")
+    mode =  'a'#input("Write p to play, write a to watch ai ")
     
     player = Agent(0,'')
     
@@ -239,14 +242,14 @@ if __name__ == '__main__':
     
     player.I = pl
     
-    wampus = Agent(random.randint(4,19),"You feel a Wampus!")
+    wampus = Agent(random.randint(4,19),"You feel a Wumpus!")
     wm = Wampus(wampus)
     wampus.I = wm
     
     bat1 = Agent(random.randint(4,19),"You hear a loud noise")
     bat2 = Agent(random.randint(4,19),"You hear a loud noise")
     if bat1.pos == bat2.pos:
-        if bat2.pos!=0:
+        if bat2.pos>4 or bat2.pos == 19:
             bat2.pos-=1
         else:
             bat2.pos+=1
@@ -256,7 +259,5 @@ if __name__ == '__main__':
     wampus.env = env
     bat1.env = env
     bat2.env = env
-    a=0
-    while a<100:
+    while True:
         env.update()
-        a+=1
