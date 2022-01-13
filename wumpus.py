@@ -169,7 +169,7 @@ class Player:
 
 
 
-class Wampus:
+class Wumpus:
     def __init__(self,agent):
         self.agent = agent
     
@@ -245,9 +245,9 @@ if __name__ == '__main__':
     
     player.I = pl
     
-    wampus = Agent(random.randint(4,19),"You feel a Wumpus!")
-    wm = Wampus(wampus)
-    wampus.I = wm
+    wumpus = Agent(random.randint(4,19),"You feel a Wumpus!")
+    wm = Wumpus(wumpus)
+    wumpus.I = wm
     
     bat1 = Agent(random.randint(4,19),"You hear a loud noise")
     bat2 = Agent(random.randint(4,19),"You hear a loud noise")
@@ -257,9 +257,9 @@ if __name__ == '__main__':
         else:
             bat2.pos+=1
     
-    env = Environment([player,wampus,bat1,bat2])
+    env = Environment([player,wumpus,bat1,bat2])
     player.env = env
-    wampus.env = env
+    wumpus.env = env
     bat1.env = env
     bat2.env = env
     while True:
