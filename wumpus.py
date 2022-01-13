@@ -31,7 +31,6 @@ class AI:
     
     def analyze(self,a):
         ancan = a
-        print(self.agent.env.agents[1].pos,self.coor,self.agent.env.map[self.agent.pos][1],self.wamcan,ancan,ancan==None)
         if ancan == None:
             self.base_analyze()
         else:
@@ -43,15 +42,12 @@ class AI:
                     self.wamcan.remove(cant)
                 elif cant in ancan:
                     ancan.remove(cant)
-            print("Ya her nenuznaia",self.wamcan,ancan)
             if len(self.wamcan)>0:
                 ti_wamcan = []
                 if len(self.wamcan)>0:
                     for an in range(len(self.wamcan)):
-                        print(self.wamcan[an],ancan,self.wamcan[an] in ancan)
                         if self.wamcan[an] in ancan:
                             ti_wamcan.append(self.wamcan[an])
-                    print(ti_wamcan)
                     self.wamcan = ti_wamcan.copy()
             else:
                 for b in ancan:
@@ -59,18 +55,27 @@ class AI:
             
             if len(self.wamcan)==1:
                 self.coor = self.wamcan[0]
-        print(self.agent.env.agents[1].pos,self.agent.env.map[self.agent.pos][1],self.wamcan,ancan,self.coor)
     def ret(self):
         self.agent.pos = self.path[len(self.path)-1]
         self.path.pop(len(self.path)-1)       
     
     
+    def shoot(self):
+        if self.coor in self.agent.env.map[self.agent.pos][1]:
+            print("Shoot at room {}".format(self.coor))
+            if self.coor == self.agent.env.agents[1].pos:
+                print("You won")                                                       
+                return False,True
+            else:
+                print("...")
+                return True,False
+        return False,False
     
     
     def step(self):
         print("You are in room {}".format(self.agent.pos))
         print("You can move or shoot at rooms {}".format(self.agent.env.map[self.agent.pos][1]))
-        
+        sh,ex = self.shoot()
         ok = True
         iss = False
         if self.agent.env.agents[1].pos in self.agent.env.map[self.agent.pos][1]:
@@ -91,18 +96,11 @@ class AI:
                 self.path.append(self.agent.pos)
                 self.agent.pos = random.choice(self.agent.env.map[self.agent.pos][1])
         else:
-            if len(self.wamcan) == 1:
-                if self.coor in self.agent.env.map[self.agent.pos][1]:
-                    print("Shoot at room {}".format(self.coor))
-                    if self.coor == self.agent.env.agents[1].pos:
-                        print("You won")                                                       
-                        return False,True
-                    else:
-                        print("...")
-                        return True,False
+
             self.analyze(self.agent.env.map[self.agent.pos][1].copy())
             self.ret()
-        return False,False
+
+        return sh,ex
 
 
 
@@ -134,8 +132,7 @@ class Player:
         except:
             print("You write bad things")
     
-    
-#19,4    
+      
     def step(self):
         print("You are in room {}".format(self.agent.pos))
         print("You can move or shoot at rooms {}".format(self.agent.env.map[self.agent.pos][1]))
@@ -144,10 +141,16 @@ class Player:
                 print(self.agent.env.agents[ag].mes)
         while True:
             try:
-                task,num = input().split()
-                task = str(task)
-                num = int(num)
+                something = input()
+                try:
+                    task,num = something.split()
+                    num = int(num)
+                except:
+                    task = str(something)
+                    num = None
                 if task == "move" or task == "m":
+                    if num == None:
+                        num = int(input("Where to "))
                     if num < 20 and num >0 and num in self.agent.env.map[self.agent.pos][1]:
                         self.agent.pos = num
                         return False,False
@@ -230,7 +233,7 @@ class Environment:
 if __name__ == '__main__':
     print("HUNT THE WUMPUS")
     
-    mode =  'a'#input("Write p to play, write a to watch ai ")
+    mode =  input("Write p to play, write a to watch ai ")
     
     player = Agent(0,'')
     
