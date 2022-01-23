@@ -76,30 +76,42 @@ class AI:
         print("You are in room {}".format(self.agent.pos))
         print("You can move or shoot at rooms {}".format(self.agent.env.map[self.agent.pos][1]))
         sh,ex = self.shoot()
+        if ex:        
+            return sh,ex
+            
         ok = True
         iss = False
+        
         if self.agent.env.agents[1].pos in self.agent.env.map[self.agent.pos][1]:
             print(self.agent.env.agents[1].mes)
             ok = False  
+        
         for ag in range(2,len(self.agent.env.agents)):
             if self.agent.env.agents[ag].pos in self.agent.env.map[self.agent.pos][1]:
                 print(self.agent.env.agents[ag].mes)
                 iss = True
+        
+        
         if ok:
             for place in self.agent.env.map[self.agent.pos][1]:
                 if place not in self.wamnot:
                     self.wamnot.append(place)
             self.analyze(None)
+            sh,ex = self.shoot()
             if iss:
                 self.ret()
             else:
                 self.path.append(self.agent.pos)
                 self.agent.pos = random.choice(self.agent.env.map[self.agent.pos][1])
+                
+                
         else:
 
             self.analyze(self.agent.env.map[self.agent.pos][1].copy())
+            sh,ex = self.shoot()
             self.ret()
-
+        
+        
         return sh,ex
 
 
